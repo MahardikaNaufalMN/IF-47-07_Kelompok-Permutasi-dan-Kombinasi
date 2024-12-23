@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Kompleksitas Algoritma Permutasi dan Kombinasi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Analisis Kompleksitas Algoritma</h1>
+    <h2>Permutasi dan Kombinasi</h2>
+
+    <form id="inputForm">
+        <label for="n">Nilai n: </label>
+        <input type="number" id="n" min="1" required>
+        <label for="r">Nilai r: </label>
+        <input type="number" id="r" min="1" required>
+        <button type="submit">Hitung</button>
+    </form>
+
+    <div id="results"></div>
+</div>
+
+<script>
+    function factorial(num) {
+        if (num <= 1) return 1;
+        return num * factorial(num - 1);
+    }
+
+    function iterativePermutation(n, r) {
+        let result = 1;
+        for (let i = 0; i < r; i++) {
+            result *= (n - i);
+        }
+        return result;
+    }
+
+    function recursivePermutation(n, r) {
+        if (r === 0) return 1;
+        return n * recursivePermutation(n - 1, r - 1);
+    }
+
+    function iterativeCombination(n, r) {
+        if (r > n) return 0;
+        let numerator = 1, denominator = 1;
+        for (let i = 0; i < r; i++) {
+            numerator *= (n - i);
+            denominator *= (i + 1);
+        }
+        return numerator / denominator;
+    }
+
+    function recursiveCombination(n, r) {
+        if (r === 0 || r === n) return 1;
+        return recursiveCombination(n - 1, r - 1) + recursiveCombination(n - 1, r);
+    }
+
+    function measureExecutionTime(callback, ...args) {
+        const start = performance.now();
+        const result = callback(...args);
+        const end = performance.now();
+        return { result, time: end - start };
+    }
+
+    document.getElementById('inputForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const n = parseInt(document.getElementById('n').value);
+        const r = parseInt(document.getElementById('r').value);
+
+        const results = [];
+
+        results.push({ ...measureExecutionTime(iterativePermutation, n, r), complexityTime: "O(r)", complexitySpace: "O(1)" });
+        results.push({ ...measureExecutionTime(recursivePermutation, n, r), complexityTime: "O(r)", complexitySpace: "O(r)" });
+        results.push({ ...measureExecutionTime(iterativeCombination, n, r), complexityTime: "O(r)", complexitySpace: "O(1)" });
+        results.push({ ...measureExecutionTime(recursiveCombination, n, r), complexityTime: "O(2^r)", complexitySpace: "O(r)" });
+
+        const output = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Algoritma</th>
+                        <th>Hasil</th>
+                        <th>Kompleksitas Waktu</th>
+                        <th>Kompleksitas Ruang</th>
+                        <th>Waktu Eksekusi (ms)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Permutasi Iteratif</td>
+                        <td>${results[0].result}</td>
+                        <td>${results[0].complexityTime}</td>
+                        <td>${results[0].complexitySpace}</td>
+                        <td>${results[0].time.toFixed(4)}</td>
+                    </tr>
+                    <tr>
+                        <td>Permutasi Rekursif</td>
+                        <td>${results[1].result}</td>
+                        <td>${results[1].complexityTime}</td>
+                        <td>${results[1].complexitySpace}</td>
+                        <td>${results[1].time.toFixed(4)}</td>
+                    </tr>
+                    <tr>
+                        <td>Kombinasi Iteratif</td>
+                        <td>${results[2].result}</td>
+                        <td>${results[2].complexityTime}</td>
+                        <td>${results[2].complexitySpace}</td>
+                        <td>${results[2].time.toFixed(4)}</td>
+                    </tr>
+                    <tr>
+                        <td>Kombinasi Rekursif</td>
+                        <td>${results[3].result}</td>
+                        <td>${results[3].complexityTime}</td>
+                        <td>${results[3].complexitySpace}</td>
+                        <td>${results[3].time.toFixed(4)}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        document.getElementById('results').innerHTML = output;
+    });
+</script>
+</body>
+</html>
